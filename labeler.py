@@ -23,6 +23,8 @@ remaining = [t for t in texts if t not in done]
 
 # ---------- 3. ACTIONS ----------
 def save_label(label):
+    if not remaining:
+        return
     new_file = not os.path.exists(LABELS_FILE)
     with open(LABELS_FILE, "a", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
@@ -55,18 +57,36 @@ sentence.pack(pady=30)
 button_row = tk.Frame(window)
 button_row.pack()
 
-creepy_button = tk.Button(button_row, text="Creepy", width=12,
+creepy_button = tk.Button(button_row, text="Creepy (1)", width=12,
                           command=lambda: save_label("creepy"))
-normal_button = tk.Button(button_row, text="Not creepy", width=12,
+normal_button = tk.Button(button_row, text="Not creepy(2)", width=12,
                           command=lambda: save_label("not creepy"))
-skip_button = tk.Button(button_row, text="Skip", width=12,
+skip_button = tk.Button(button_row, text="Skip(3)", width=12,
                         command=lambda: save_label("skip"))
 
 creepy_button.pack(side="left", padx=10)
 normal_button.pack(side="left", padx=10)
 skip_button.pack(side="left", padx=10)
+window.bind("1", lambda event: save_label("creepy"))
+window.bind("2", lambda event: save_label ("not creepy"))
+window.bind("3", lambda event: save_label ("skip"))
+window.bind("z", lambda event: undo())
 
 buttons = [creepy_button, normal_button, skip_button]
 
 show_next()
+def undo():
+    if not os.path.exists(LABELS_FILE):
+        return
+    with open(LABELS_FILE, encoding="utf-8", newline="") as f:
+        rows = list(csv.reader(f))
+    if len(rows) <= 1:  # only the header left, nothing to undo
+        return
+    last_row = rows.pop()
+    with open(LABELS_FILE, "w", encoding="utf-8", newline="") as f:
+        csv.writer(f).writerows(rows)
+    remaining.insert(0, last_row[0])
+    for button in buttons:
+        button.config(state="normal")
+    show_next()
 window.mainloop()

@@ -6,6 +6,8 @@ and every answer is saved to a CSV file, the same format real AI training data u
 
 ## Features
 
+- Keyboard shortcuts: 1 = Creepy, 2 = not creepy, 3 = skip
+- Undo the last label with Z
 - One sentence at a time, three buttons: Creepy / Not creepy / Skip
 - Every label is saved instantly to `labels.csv`
 - Progress counter
