@@ -28,6 +28,7 @@ No installs needed, only Python's built-in libraries.
 
 - **Creepy:** something impossible or unexplained happens
 - **Not creepy:** there's a normal explanation, even if the situation is strange
+- **Kinda creepy:** unsettling, but a normal explanation is possible, it's just not stated.
   (e.g. "The wind rattled the windows all night." The cause is stated, so not creepy)
 
 A consistent rule matters more than gut feeling: two annotators labeling
@@ -36,3 +37,16 @@ by vibe will disagree, two annotators following the same guideline won't.
 ## Example output
 
 `labels.csv` contains 30 sentences I labeled with this tool.
+
+## Agreement check
+
+`compare.py` compares two annotators' labels on the same sentences
+and lists where they disagree (inter-annotator agreement).
+
+1. Rename your `labels.csv` to `labels_me.csv`
+2. A second annotator labels the same sentences, then rename their `labels.csv` to `labels_other.csv`
+3. Run `python compare.py`
+
+My test: labeling once by the guideline and once by gut feeling gave 93% agreement.
+The two disagreements were exactly the borderline cases (weather and smells),
+which shows where the guideline needs a clearer rule.
