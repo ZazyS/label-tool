@@ -71,6 +71,7 @@ window.bind("1", lambda event: save_label("creepy"))
 window.bind("2", lambda event: save_label ("not creepy"))
 window.bind("3", lambda event: save_label ("skip"))
 window.bind("z", lambda event: undo())
+window.bind("s", lambda event: show_stats())
 
 buttons = [creepy_button, normal_button, skip_button]
 
@@ -89,4 +90,25 @@ def undo():
     for button in buttons:
         button.config(state="normal")
     show_next()
+def show_stats():
+    counts = {"creepy": 0, "not creepy": 0, "skip": 0}
+    if os.path.exists(LABELS_FILE):
+        with open(LABELS_FILE, encoding="utf-8", newline="") as f:
+            reader = csv.reader(f)
+            next(reader, None)  # skip the header row
+            for row in reader:
+                label = row[1]
+                if label in counts:
+                    counts[label] += 1
+
+    total = sum(counts.values())
+    lines = [f"Total labeled: {total}", ""]
+    for label, count in counts.items():
+        bar = "█" * count
+        lines.append(f"{label:<11} {count:>3}  {bar}")
+
+    stats_window = tk.Toplevel(window)
+    stats_window.title("Stats")
+    tk.Label(stats_window, text="\n".join(lines),
+             font=("Consolas", 12), justify="left").pack(padx=20, pady=20)
 window.mainloop()

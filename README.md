@@ -12,6 +12,7 @@ and every answer is saved to a CSV file, the same format real AI training data u
 - Every label is saved instantly to `labels.csv`
 - Progress counter
 - Resume: close it halfway, and it continues where you stopped
+- Stats window with S: label counts with bars, to check if the dataset is balanced
 
 ## How to run
 
