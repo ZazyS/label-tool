@@ -13,12 +13,14 @@ and every answer is saved to a CSV file, the same format real AI training data u
 - Progress counter
 - Resume: close it halfway, and it continues where you stopped
 - Stats window with S: label counts with bars, to check if the dataset is balanced
+- Custom categories: edit categories.txt (one per line, up to 8). Skip is added automatically
 
 ## How to run
 
-1. Put the sentences you want to label in `texts.txt`, one per line
-2. Run `python labeler.py`
-3. Results appear in `labels.csv`
+1. Put your categories in categories.txt, one per line.
+2. Put the sentences you want to label in `texts.txt`, one per line
+3. Run `python labeler.py`
+4. Results appear in `labels.csv`
 
 No installs needed, only Python's built-in libraries.
 

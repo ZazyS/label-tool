@@ -6,8 +6,13 @@ import tkinter as tk
 FOLDER = os.path.dirname(os.path.abspath(__file__))
 TEXTS_FILE = os.path.join(FOLDER, "texts.txt")
 LABELS_FILE = os.path.join(FOLDER, "labels.csv")
+CATEGORIES_FILE = os.path.join(FOLDER, "categories.txt")
 
 # ---------- 2. LOAD ----------
+with open(CATEGORIES_FILE, encoding="utf-8") as f:
+    categories = [line.strip() for line in f if line.strip()]
+categories = categories[:8]  # max 8, so everything fits on keys 1-9
+
 with open(TEXTS_FILE, encoding="utf-8") as f:
     texts = [line.strip() for line in f if line.strip()]
 
@@ -43,39 +48,6 @@ def show_next():
         for button in buttons:
             button.config(state="disabled")
 
-# ---------- 4. WINDOW ----------
-window = tk.Tk()
-window.title("Label Tool")
-window.geometry("650x300")
-
-counter = tk.Label(window, font=("Arial", 11))
-counter.pack(pady=10)
-
-sentence = tk.Label(window, font=("Arial", 16), wraplength=550)
-sentence.pack(pady=30)
-
-button_row = tk.Frame(window)
-button_row.pack()
-
-creepy_button = tk.Button(button_row, text="Creepy (1)", width=12,
-                          command=lambda: save_label("creepy"))
-normal_button = tk.Button(button_row, text="Not creepy(2)", width=12,
-                          command=lambda: save_label("not creepy"))
-skip_button = tk.Button(button_row, text="Skip(3)", width=12,
-                        command=lambda: save_label("skip"))
-
-creepy_button.pack(side="left", padx=10)
-normal_button.pack(side="left", padx=10)
-skip_button.pack(side="left", padx=10)
-window.bind("1", lambda event: save_label("creepy"))
-window.bind("2", lambda event: save_label ("not creepy"))
-window.bind("3", lambda event: save_label ("skip"))
-window.bind("z", lambda event: undo())
-window.bind("s", lambda event: show_stats())
-
-buttons = [creepy_button, normal_button, skip_button]
-
-show_next()
 def undo():
     if not os.path.exists(LABELS_FILE):
         return
@@ -90,12 +62,17 @@ def undo():
     for button in buttons:
         button.config(state="normal")
     show_next()
+
 def show_stats():
-    counts = {"creepy": 0, "not creepy": 0, "skip": 0}
+    counts = {}
+    for category in categories:
+        counts[category] = 0
+    counts["skip"] = 0
+
     if os.path.exists(LABELS_FILE):
         with open(LABELS_FILE, encoding="utf-8", newline="") as f:
             reader = csv.reader(f)
-            next(reader, None)  # skip the header row
+            next(reader, None)
             for row in reader:
                 label = row[1]
                 if label in counts:
@@ -111,4 +88,32 @@ def show_stats():
     stats_window.title("Stats")
     tk.Label(stats_window, text="\n".join(lines),
              font=("Consolas", 12), justify="left").pack(padx=20, pady=20)
+
+# ---------- 4. WINDOW ----------
+window = tk.Tk()
+window.title("Label Tool")
+window.geometry("700x300")
+
+counter = tk.Label(window, font=("Arial", 11))
+counter.pack(pady=10)
+
+sentence = tk.Label(window, font=("Arial", 16), wraplength=600)
+sentence.pack(pady=30)
+
+button_row = tk.Frame(window)
+button_row.pack()
+
+buttons = []
+choices = categories + ["skip"]
+for number, choice in enumerate(choices, start=1):
+    button = tk.Button(button_row, text=f"{choice.capitalize()} ({number})",
+                       command=lambda c=choice: save_label(c))
+    button.pack(side="left", padx=10)
+    buttons.append(button)
+    window.bind(str(number), lambda event, c=choice: save_label(c))
+
+window.bind("z", lambda event: undo())
+window.bind("s", lambda event: show_stats())
+
+show_next()
 window.mainloop()
